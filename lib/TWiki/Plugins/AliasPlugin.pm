@@ -29,6 +29,7 @@ use vars qw(
         $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION
     );
 
+use TWiki::Func;
 
 $VERSION = '$Rev$';
 $RELEASE = '2.31';

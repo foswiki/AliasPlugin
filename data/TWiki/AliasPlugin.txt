@@ -14,7 +14,7 @@
 <table style="float:right">
 <tr>
   <td><img src="%ATTACHURLPATH%/wikiringlogo40x40.png"></td>
-  <td><a href="http://wikiring.de" title="Make your Wiki ring!" style="text-decoration:none">
+  <td><a href="http://wikiring.com" title="Make your Wiki ring!" style="text-decoration:none">
       Powered by <br /> <nop>WikiRing Consultants </a>
   </td>
 </tr>
@@ -22,10 +22,10 @@
 This plugin allows you to create arbitrary word aliases.
 If you write down a word that has a defined alias, it will then be replaced with 
 the given text string. If that string is a string of the format =&lt;web&gt;.&lt;topic&gt;=
-it will be replaced by an appropriate TWiki link. Aliases take only effect within the boundaries
+it will be replaced by an appropriate link. Aliases take only effect within the boundaries
 if _alias areas_ between %<nop>STARTALIASAREA% and %<nop>STOPALIASAREA% tags.  
 
-Aliases aren't replaced within html tags (=&lt;html tag ... <nop>TESTALIAS ... &gt;=), TWiki tags (=%<nop>INCLUDE... <nop>TESTALIAS ...%=) and TWiki links
+Aliases aren't replaced within html tags (=&lt;html tag ... <nop>TESTALIAS ... &gt;=), tags (=%<nop>INCLUDE... <nop>TESTALIAS ...%=) and links
 (=[<nop>[%SYSTEMWEB%.WebHome][<nop>TESTALIAS]]=). A word can be prevented of being substituted by
 prefixing it with =&lt;nop&gt;=.
 
@@ -43,7 +43,7 @@ Aliases can also be defined within the current topic, that is they will only be 
 effect on the current topic. Similarly, aliases can be disabled. See the
 Syntax section for more details.
 
-By default no alias substitution is applied to a page. You can configure all of your TWiki
+By default no alias substitution is applied to a page. You can configure all of your 
 pages to get alias substitution by 
    1 prepending =alias= to your =SKIN= variable in your <nop>%SYSTEMWEB%.DefaultPreferences/<nop>%USERSWEB%.SitePreferences/<nop>WebPreferences/topic preferenes
      <verbatim>Set SKIN = alias, pattern</verbatim>
@@ -53,7 +53,7 @@ pages to get alias substitution by
      tags; these can occur multiple times on a page (note: nested alias areas aren't supported).
 
 ---++ Syntax
-This is the list of TWiki tags defined by this plugin.
+This is the list of tags defined by this plugin.
 | *Name* | *Description* | 
 | %<nop>ALIASES% | display all aliases | 
 | %<nop>ALIASES{regex="on"}% | display also the regular expression to match the alias | 
@@ -108,7 +108,7 @@ macro or listed in the following way:
    * Unzip ==%TOPIC%.zip== in your twiki installation directory. Content:
      | *File:* | *Description:* |
 %$MANIFEST%
-   * Visit =configure= in your TWiki installation, and enable the plugin in the {Plugins} section.
+   * Visit =configure= in your installation, and enable the plugin in the {Plugins} section.
    * Edit your %USERSWEB%.SitePreferences and prepend to your SKIN variable the =alias= identifier,
      for example to
      <verbatim>   * Set SKIN = alias,pattern</verbatim>
@@ -126,9 +126,9 @@ macro or listed in the following way:
 |  6 | TESTLINKTESTLINK | TESTLINKTESTLINK | no: this is _one_ word not being aliases |
 |  7 | rtfm | read the fine manual | yes, but be more polite to your users |
 |  8 | <a href="%SCRIPTURL{"view"}%/TESTALIAS" title="TESTALIAS">TESTALIAS</a> | <a href="%SCRIPTURL{"view"}%/yes" title="yes">yes</a> | yes |
-|  9 | [[%SYSTEMWEB%.WebHome][TESTALIAS]] | <a href="%SCRIPTURLPATH{"view"}%/%SYSTEMWEB%.WebHome">T<nop>ESTALIAS</a> | no, don't substitute inside a TWiki tag | 
-|  10 | [[TESTALIAS]] | <a href="%SCRIPTURL{"edit"}%/%WEB%/TESTALIAS?topicparent=%WEB%.%TOPIC%" class="foswikiNewLink" title="Create this topic">T<nop>ESTALIAS</a>| no, don't substitute inside a TWiki tag |
-|  11 | [<nop>[TESTALIAS]] | [<nop>[T<nop>ESTALIAS]] | no, not even inside a _nopped_ TWiki tag | 
+|  9 | [[%SYSTEMWEB%.WebHome][TESTALIAS]] | <a href="%SCRIPTURLPATH{"view"}%/%SYSTEMWEB%.WebHome">T<nop>ESTALIAS</a> | no, don't substitute inside a tag | 
+|  10 | [[TESTALIAS]] | <a href="%SCRIPTURL{"edit"}%/%WEB%/TESTALIAS?topicparent=%WEB%.%TOPIC%" class="foswikiNewLink" title="Create this topic">T<nop>ESTALIAS</a>| no, don't substitute inside a tag |
+|  11 | [<nop>[TESTALIAS]] | [<nop>[T<nop>ESTALIAS]] | no, not even inside a _nopped_ tag | 
 |  12 | <font color="red"> TESTALIAS </font> | <font color="red"> yes </font> | yes, ignores =red= |
 |  13 | %RED% %TESTALIAS% %ENDCOLOR%  | %RED% %T<nop>ESTALIAS% %ENDCOLOR% | no, inside two =%= |
 |  14 | %RED%%TESTALIAS%%ENDCOLOR%  | %RED%%T<nop>ESTALIAS%%ENDCOLOR% | no, this is inside two =%= | 
@@ -136,16 +136,16 @@ macro or listed in the following way:
 |  16 | <font color="red">%TESTALIAS%</font>  | <font color="red">%T<nop>ESTALIAS%</font> | no, inside two =%= |
 |  17 | %TESTALIAS | %yes | yes, no =perc= on the same line | 
 |  18 | %TESTALIAS | %yes | yes, with a second =%= here | 
-|  19 | %BLABLA TESTALIAS% | %BLABLA yes% | yes, this is no regular TWiki tag |
-|  20 | %BLABLA{TESTALIAS}% | %BLABLA{T<nop>ESTALIAS}% | no, this is a regular TWiki tag |
-|  21 | %<nop>BLABLA{TESTALIAS}% | %<nop>BLABLA{T<nop>ESTALIAS}% | no, albeit this is a _nopped_ TWiki tag |
+|  19 | %BLABLA TESTALIAS% | %BLABLA yes% | yes, this is no regular tag |
+|  20 | %BLABLA{TESTALIAS}% | %BLABLA{T<nop>ESTALIAS}% | no, this is a regular tag |
+|  21 | %<nop>BLABLA{TESTALIAS}% | %<nop>BLABLA{T<nop>ESTALIAS}% | no, albeit this is a _nopped_ tag |
 %STOPALIASAREA%
 
 ---++ Plugin Info
 <!--
    * Set SHORTDESCRIPTION = Define aliases which will be replaced with arbitrary strings automatically
 -->
-|  Plugin Author: | TWiki:Main/OthelloMaurer, TWiki:Main/MichaelDaum |
+|  Plugin Author: | Othello Maurer, Michael Daum |
 |  Copyright &copy;: | 2003, Othello Maurer; 2003-2008, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Version: | v2.31 |
@@ -183,8 +183,5 @@ macro or listed in the following way:
 |  Perl Version: | 5.005 |
 |  Plugin Home: | http://foswiki.org/Extensions/%TOPIC% |
 |  Feedback: | http://foswiki.org/Extensions/%TOPIC%Dev |
-
--- TWiki:Main/OthelloMaurer - 09 Oct 2003 %BR%
--- TWiki:Main/MichaelDaum - 28 Apr 2008
 
 %META:FILEATTACHMENT{name="wikiringlogo40x40.png" attachment="wikiringlogo40x40.png" attr="h" comment="" date="1189787359" path="wikiringlogo40x40.png" size="2571" stream="wikiringlogo40x40.png" tmpFilename="" user="ProjectContributor" version="1"}%
