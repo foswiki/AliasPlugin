@@ -1,7 +1,7 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (C) 2003 Othello Maurer <maurer@nats.informatik.uni-hamburg.de>
-# Copyright (C) 2003-2007 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2003-2009 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -14,7 +14,7 @@
 # GNU General Public License for more details, published at 
 # http://www.gnu.org/copyleft/gpl.html
 # =========================
-package TWiki::Plugins::AliasPlugin;    # change the package name and $pluginName!!!
+package Foswiki::Plugins::AliasPlugin;    # change the package name and $pluginName!!!
 
 use strict;
 use vars qw(
@@ -25,11 +25,11 @@ use vars qw(
 	$defaultWebNameRegex
 	$foundError $isInitialized $insideAliasArea
 	$TranslationToken $foundAliases
-	%TWikiCompatibility $START $STOP
+	%FoswikiCompatibility $START $STOP
         $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION
     );
 
-use TWiki::Func;
+use Foswiki::Func;
 
 $VERSION = '$Rev$';
 $RELEASE = '2.31';
@@ -39,8 +39,8 @@ $NO_PREFS_IN_TOPIC = 1;
 $START = '(?:^|(?<=[\w\b\s\,\.\;\:\!\?\)\(]))';
 $STOP = '(?:$|(?=[\w\b\s\,\.\;\:\!\?\)\(]))';
 $TranslationToken= "\0\1\0";
-$TWikiCompatibility{endRenderingHandler} = 1.1;
-$TWikiCompatibility{outsidePREHandler} = 1.1;
+$FoswikiCompatibility{endRenderingHandler} = 1.1;
+$FoswikiCompatibility{outsidePREHandler} = 1.1;
 
 use constant DEBUG => 0; # toggle me
 
@@ -71,13 +71,13 @@ sub doInit {
 
   # get plugin flags
   $aliasWikiWordsOnly = 
-    TWiki::Func::getPreferencesFlag("ALIASPLUGIN_ALIAS_WIKIWORDS_ONLY") || 0;
+    Foswiki::Func::getPreferencesFlag("ALIASPLUGIN_ALIAS_WIKIWORDS_ONLY") || 0;
   
   # decide on how to match alias words
-  $wikiWordRegex = &TWiki::Func::getRegularExpression('wikiWordRegex');
-  $topicRegex = &TWiki::Func::getRegularExpression('mixedAlphaNumRegex');
-  $webRegex = &TWiki::Func::getRegularExpression('webNameRegex');
-  $defaultWebNameRegex = &TWiki::Func::getRegularExpression('defaultWebNameRegex');
+  $wikiWordRegex = $Foswiki::regex{'wikiWordRegex'};
+  $topicRegex = $Foswiki::regex{'mixedAlphaNumRegex'};
+  $webRegex = $Foswiki::regex{'webNameRegex'};
+  $defaultWebNameRegex = $Foswiki::regex{'defaultWebNameRegex'};
 
   if ($aliasWikiWordsOnly) {
     $wordRegex = $wikiWordRegex;
@@ -90,11 +90,11 @@ sub doInit {
   %aliasRegex = ();
   %aliasValue = ();
 
-  # look for aliases in Main or TWiki web
-  my $web = TWiki::Func::getMainWebname();
+  # look for aliases in Main or System web
+  my $web = $Foswiki::cfg{UsersWebName};
   my $topic = 'WebAliases';
   unless (getAliases($web, $topic)) {
-    $web = TWiki::Func::getTwikiWebname();
+    $web = $Foswiki::cfg{SystemWebName};
     $topic = 'WebAliases';
     getAliases($web, $topic);
   }
@@ -166,8 +166,8 @@ sub handleAliases {
   $args ||= '';
   #writeDebug("handleAliases($args) called");
 
-  require TWiki::Attrs;
-  my $params = new TWiki::Attrs($args);
+  require Foswiki::Attrs;
+  my $params = new Foswiki::Attrs($args);
   my $theTopic = $params->{_DEFAULT} || $params->{topic};
   my $theRegex = $params->{regex} || 'off';
 
@@ -205,8 +205,8 @@ sub handleAlias {
 
   #writeDebug("handleAlias() called");
 
-  require TWiki::Attrs;
-  my $params = new TWiki::Attrs($args);
+  require Foswiki::Attrs;
+  my $params = new Foswiki::Attrs($args);
   my $theKey = $params->{_DEFAULT} || $params->{name};
   my $theValue = $params->{value};
   my $theRegex = $params->{regex} || '';
@@ -230,8 +230,8 @@ sub handleUnAlias {
   #writeDebug("handleUnAlias() called");
 
   if ($args) {
-    require TWiki::Attrs;
-    my $params = new TWiki::Attrs($args);
+    require Foswiki::Attrs;
+    my $params = new Foswiki::Attrs($args);
     my $theKey = $params->{_DEFAULT} || $params->{name};
     if ($theKey) {
       delete $aliasRegex{$theKey};
@@ -278,7 +278,7 @@ sub getAliases {
 
   $topic ||= 'WebAliases';
   $web ||= $currentWeb;
-  ($web, $topic) = TWiki::Func::normalizeWebTopicName($web, $topic);
+  ($web, $topic) = Foswiki::Func::normalizeWebTopicName($web, $topic);
 
   # have we alread red these aliaes
   return if defined $seenAliasWebTopics{"$web.$topic"};
@@ -287,11 +287,11 @@ sub getAliases {
   #writeDebug("getAliases($web, $topic)");
 
   # parse the plugin preferences lines
-  unless (TWiki::Func::topicExists($web, $topic)) {
+  unless (Foswiki::Func::topicExists($web, $topic)) {
     return 0;
   }
 
-  my $prefText = TWiki::Func::readTopicText($web, $topic);
+  my $prefText = Foswiki::Func::readTopicText($web, $topic);
 
   foreach my $line (split /\n/, $prefText) {
     if ($line =~ /^(?:\t| {3})+\* (?:\<nop\>)?($wordRegex): +(.*)$/) {
@@ -353,23 +353,23 @@ sub handleAliasArea {
 
       #writeDebug("html: substr='$substr', tail='$tail'\n");
       
-      # escape twiki tags
+      # escape tags
       if ($substr) {
 	while ($substr =~ /([^%]*)(((%[A-Z][a-zA-Z_0-9]+({[^}]+})?%)*)|%)/go) {
 	
 	  my $substr = $1;
 	  my $tail = $2;
 
-	  #writeDebug("twiki tags: substr='$substr', tail='$tail'\n");
+	  #writeDebug("tags: substr='$substr', tail='$tail'\n");
 	  
-	  # escape twiki links
+	  # escape links
 	  if ($substr) {
 	    while ($substr =~ /([^\[]*)((?:\[[^\]]*\])*|\[)/go) {
 
 	      my $substr = $1;
 	      my $tail = $2;
 
-	      #writeDebug("twiki links: substr='$substr', tail='$tail'\n");
+	      #writeDebug("links: substr='$substr', tail='$tail'\n");
 
 	      # do the substitution
 	      if ($substr) {

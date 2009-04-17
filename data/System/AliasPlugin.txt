@@ -103,12 +103,7 @@ macro or listed in the following way:
 %ALIASES%
 
 ---++ Plugin Installation Instructions
-
-   * [[%ATTACHURL%/AliasPlugin.zip][Download]] the ZIP file
-   * Unzip ==%TOPIC%.zip== in your twiki installation directory. Content:
-     | *File:* | *Description:* |
-%$MANIFEST%
-   * Visit =configure= in your installation, and enable the plugin in the {Plugins} section.
+%$INSTALL_INSTRUCTIONS%
    * Edit your %USERSWEB%.SitePreferences and prepend to your SKIN variable the =alias= identifier,
      for example to
      <verbatim>   * Set SKIN = alias,pattern</verbatim>
@@ -154,7 +149,7 @@ macro or listed in the following way:
 |  13 Nov 2007: | Item4959: disabled settings in plugin topic, \
                   removed DEFAULT_ALIASES |
 |  14 Sep 2007: | added view.alias.tmpl |
-|  13 Sep 2007: | rewrite for modern TWiki engines |
+|  13 Sep 2007: | rewrite for modern wiki engines |
 |  10 Feb 2006: | fixed use of uninitialized value (outch) |
 |  03 Feb 2006: | prevent nested alias expansion; \
                   support convenience aliases for anchors on the same page |
@@ -164,17 +159,17 @@ macro or listed in the following way:
        fixed use of uninitialized values due to special chars in alias patterns; \
        the ALIAS tag in WebAliases can be used to define global aliases now |
 |  27 Apr 2005: | always read site aliases and then merge in web aliases |
-|  07 Apr 2005: | TWiki:Main/MichaelDaum: major rewrite |
-|  30 Mar 2005: | TWiki:Main/MichaelDaum: added alias area |
+|  07 Apr 2005: | Foswiki:Main/MichaelDaum: major rewrite |
+|  30 Mar 2005: | Foswiki:Main/MichaelDaum: added alias area |
 | &nbsp; | added fix to honor order of alias/unalias commands in a topic |
-|  23 Mar 2005: | TWiki:Main/MichaelDaum: added list of test-cases |
+|  23 Mar 2005: | Foswiki:Main/MichaelDaum: added list of test-cases |
 |  &nbsp; | rewrite of substitution code |
 |  &nbsp; | improved configurability |
-|  22 Mar 2005: | TWiki:Main/MichaelDaum: prevent substitutions within html tags, twiki tags and twiki links |
-|  21 Mar 2005: | TWiki:Main/MichaelDaum: allow arbitrary string substs |
+|  22 Mar 2005: | Foswiki:Main/MichaelDaum: prevent substitutions within html tags, wiki tags and links |
+|  21 Mar 2005: | Foswiki:Main/MichaelDaum: allow arbitrary string substs |
 |  &nbsp; | configured via a list now (was tables) |
 |  &nbsp; | taking care not to replace inside html tags |
-|  1 Dec 2003: | TWiki:Main.NielsKoldso: Non %SYSTEMWEB%.WikiWord aliases as an option | 
+|  1 Dec 2003: | Foswiki:Main.NielsKoldso: Non %SYSTEMWEB%.WikiWord aliases as an option | 
 |  &nbsp; | More alias prefixes allowed |
 |  16 Oct 2003: | Speedup |
 |  09 Oct 2003: | Initial Version |
@@ -182,6 +177,6 @@ macro or listed in the following way:
 |  Other Dependencies: | none |
 |  Perl Version: | 5.005 |
 |  Plugin Home: | http://foswiki.org/Extensions/%TOPIC% |
-|  Feedback: | http://foswiki.org/Extensions/%TOPIC%Dev |
+|  Support: | http://foswiki.org/Support/%TOPIC% |
 
 %META:FILEATTACHMENT{name="wikiringlogo40x40.png" attachment="wikiringlogo40x40.png" attr="h" comment="" date="1189787359" path="wikiringlogo40x40.png" size="2571" stream="wikiringlogo40x40.png" tmpFilename="" user="ProjectContributor" version="1"}%
