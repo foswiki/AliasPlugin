@@ -141,10 +141,11 @@ macro or listed in the following way:
    * Set SHORTDESCRIPTION = Define aliases which will be replaced with arbitrary strings automatically
 -->
 |  Plugin Author: | Othello Maurer, Michael Daum |
-|  Copyright &copy;: | 2003, Othello Maurer; 2003-2008, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2003, Othello Maurer; 2003-2009, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Version: | v2.31 |
+|  Version: | v2.40 |
 |  Change History: | &nbsp; |
+|  17 Apr 2009: | converted to Foswiki plugin |
 |  28 Apr 2008: | speed improvements |
 |  13 Nov 2007: | Item4959: disabled settings in plugin topic, \
                   removed DEFAULT_ALIASES |

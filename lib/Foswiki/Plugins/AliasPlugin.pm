@@ -32,7 +32,7 @@ use vars qw(
 use Foswiki::Func;
 
 $VERSION = '$Rev$';
-$RELEASE = '2.31';
+$RELEASE = '2.40';
 $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 $NO_PREFS_IN_TOPIC = 1;
 
