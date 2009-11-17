@@ -2,5 +2,3 @@ data/System/AliasPlugin.txt 0644
 data/System/WebAliases.txt 0644
 lib/Foswiki/Plugins/AliasPlugin.pm 0644
 pub/System/AliasPlugin/wikiringlogo40x40.png 0644
-templates/view.alias.tmpl 0644
-templates/body.alias.tmpl 0644

@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1189787359" format="1.1" version="$Rev$"}%
+%META:TOPICINFO{author="ProjectContributor" comment="save topic" date="1258043468" format="1.1" reprev="1.2" version="1.2"}%
 <!--
 
    PLEASE DO NOT EDIT THIS TOPIC
@@ -22,35 +22,18 @@
 This plugin allows you to create arbitrary word aliases.
 If you write down a word that has a defined alias, it will then be replaced with 
 the given text string. If that string is a string of the format =&lt;web&gt;.&lt;topic&gt;=
-it will be replaced by an appropriate link. Aliases take only effect within the boundaries
-if _alias areas_ between %<nop>STARTALIASAREA% and %<nop>STOPALIASAREA% tags.  
-
-Aliases aren't replaced within html tags (=&lt;html tag ... <nop>TESTALIAS ... &gt;=), tags (=%<nop>INCLUDE... <nop>TESTALIAS ...%=) and links
-(=[<nop>[%SYSTEMWEB%.WebHome][<nop>TESTALIAS]]=). A word can be prevented of being substituted by
-prefixing it with =&lt;nop&gt;=.
+it will be replaced by an appropriate link. 
 
 ---++ Configuration
 Configuration of this plugin is done by writing 
-your aliases into a specific topic, the <nop>WebAliases. This topic is looked up
-in three places: 
-   1 the current web
-   2 the %MAINWEB% web
-   3 if there's no <nop>WebAliases topic in the %MAINWEB% it will be looked up in the %SYSTEMWEB% 
-The aliases defined in (1) are merged with those in (2) or (3). Thereby you can define
-site-wide aliases in <nop>%MAINWEB%.WebAliases and  web specific aliases in the current's web <nop>WebAliases
-topic.
-Aliases can also be defined within the current topic, that is they will only be taking
-effect on the current topic. Similarly, aliases can be disabled. See the
-Syntax section for more details.
+your aliases into a specific topic, the <nop>WebAliases defining the WebAliases for the current web.
+Site-wide aliases can be defined in <nop>%USERSWEB%.SiteAliases. Definitions are looked up in the given order:
 
-By default no alias substitution is applied to a page. You can configure all of your 
-pages to get alias substitution by 
-   1 prepending =alias= to your =SKIN= variable in your <nop>%SYSTEMWEB%.DefaultPreferences/<nop>%USERSWEB%.SitePreferences/<nop>WebPreferences/topic preferenes
-     <verbatim>Set SKIN = alias, pattern</verbatim>
-   2 appending =?cover=alias= to an url or
-   3 by specifying so called "alias areas":
-     an alias area is specified using the =%<nop>STARTALIASAREA%= ... =%<nop>STOPALIASAREA%=
-     tags; these can occur multiple times on a page (note: nested alias areas aren't supported).
+   1 current topic
+   1 current web's <nop>WebAliases
+   1 <nop>%USERSWEB%.SiteAliases
+
+Aliases are applied when saving a topic. The original form is encoded together with the replacement. The reverse operation is done before editing the topic.
 
 ---++ Syntax
 This is the list of tags defined by this plugin.
@@ -62,29 +45,29 @@ This is the list of tags defined by this plugin.
 | %<nop>ALIAS{name="..." value="..." [regex="..."]}% \
   | defines an alias using =regex= to find it;\
     if =regex= is not specified it defaults to the alias' name |
-| %<nop>STARTALIASAREA% | mark the beginning of an alias area |
-| %<nop>STOPALIASAREA% | mark the end of an alias area |
 | %<nop>UNALIAS% | delete all aliases |
 | %<nop>UNALIAS{name="..."}%,%<nop>UNALIAS{"..."}% | deletes one alias |
 
 The =regex= parameter in the %<nop>ALIAS{...}% tag might contain the two variables
 =$start= and =$stop= that help to match the boundaries of an alias consisting of 
-non-alphabetic characters. Textile example:
+non-alphabetic characters. Some textile examples:
 
-<pre>
-%<nop>ALIAS{name="''" regex="$start''$stop" value="&amp;rdquo;"}%
-%<nop>ALIAS{name="``" regex="$start``$stop" value="&amp;ldquo;"}%
-%<nop>ALIAS{name="-" regex=" - " value=" &amp;ndash; "}%
-%<nop>ALIAS{name="--" regex=" -- " value=" &amp;mdash; "}%
-%<nop>ALIAS{name="(c)" regex="$start\(c\)$stop" value="&amp;copy;"}%
-%<nop>ALIAS{name="(r)" regex="$start\(r\)$stop" value="&amp;reg;"}%
-%<nop>ALIAS{name="(tm)" regex="$start\(tm\)$stop" value="&amp;trade;"}%
-%<nop>ALIAS{name="..." regex="$start\.\.\.$stop" value="&amp;hellip;"}%
-%<nop>ALIAS{name=",," regex="$start,,$stop" value="&amp;bdquo;"}%
-%<nop>ALIAS{name="1/2" regex="$start1/2$stop" value="&amp;frac12;"}%
-%<nop>ALIAS{name="1/4" regex="$start1/4$stop" value="&amp;frac14;"}%
-%<nop>ALIAS{name="3/4" regex="$start3/4$stop" value="&amp;frac34;"}%
-</pre>
+<verbatim class="tml">
+%STARTSECTION{"textile"}%
+%ALIAS{name="''" regex="$start''$stop" value="&rdquo;"}%
+%ALIAS{name="``" regex="$start``$stop" value="&ldquo;"}%
+%ALIAS{name="-" regex=" - " value=" &ndash; "}%
+%ALIAS{name="--" regex=" -- " value=" &mdash; "}%
+%ALIAS{name="(c)" regex="$start\(c\)$stop" value="&copy;"}%
+%ALIAS{name="(r)" regex="$start\(r\)$stop" value="&reg;"}%
+%ALIAS{name="(tm)" regex="$start\(tm\)$stop" value="&trade;"}%
+%ALIAS{name="..." regex="$start\.\.\.$stop" value="&hellip;"}%
+%ALIAS{name=",," regex="$start,,$stop" value="&bdquo;"}%
+%ALIAS{name="1/2" regex="$start1/2$stop" value="&frac12;"}%
+%ALIAS{name="1/4" regex="$start1/4$stop" value="&frac14;"}%
+%ALIAS{name="3/4" regex="$start3/4$stop" value="&frac34;"}%
+%ENDSECTION{"textile"}%
+</verbatim>
 
 
 The aliases in the topic <nop>WebAliases topic can be either defined using the %<nop>ALIAS{}%
@@ -104,37 +87,6 @@ macro or listed in the following way:
 
 ---++ Plugin Installation Instructions
 %$INSTALL_INSTRUCTIONS%
-   * Edit your %USERSWEB%.SitePreferences and prepend to your SKIN variable the =alias= identifier,
-     for example to
-     <verbatim>   * Set SKIN = alias,pattern</verbatim>
-     This surrounds the textarea with the STARTALIASAREA, STOPALIASAREA tags to mark the area where
-     aliases are inserted.
-
----++ Test-Cases
-%STARTALIASAREA%
-| *&nbsp;* | *Test* | *Should be* | *Comment* | 
-|  1 | TESTLINK | [[%SYSTEMWEB%.WebHome][TESTLINK]] | yes, substitute: this is a link to <nop>System.WebHome | 
-|  2 | TESTALIAS | yes | yes | 
-|  3 | _TESTLINK | _TESTLINK | no substitution: =_= is no word boundary | 
-|  4 | TESTLINK_TESTLINK | TESTLINK_TESTLINK | no: =_= is no word boundary | 
-|  5 | <u>TESTLINK</u> | <u>[[%SYSTEMWEB%.WebHome][TESTLINK]]</u> | yes | 
-|  6 | TESTLINKTESTLINK | TESTLINKTESTLINK | no: this is _one_ word not being aliases |
-|  7 | rtfm | read the fine manual | yes, but be more polite to your users |
-|  8 | <a href="%SCRIPTURL{"view"}%/TESTALIAS" title="TESTALIAS">TESTALIAS</a> | <a href="%SCRIPTURL{"view"}%/yes" title="yes">yes</a> | yes |
-|  9 | [[%SYSTEMWEB%.WebHome][TESTALIAS]] | <a href="%SCRIPTURLPATH{"view"}%/%SYSTEMWEB%.WebHome">T<nop>ESTALIAS</a> | no, don't substitute inside a tag | 
-|  10 | [[TESTALIAS]] | <a href="%SCRIPTURL{"edit"}%/%WEB%/TESTALIAS?topicparent=%WEB%.%TOPIC%" class="foswikiNewLink" title="Create this topic">T<nop>ESTALIAS</a>| no, don't substitute inside a tag |
-|  11 | [<nop>[TESTALIAS]] | [<nop>[T<nop>ESTALIAS]] | no, not even inside a _nopped_ tag | 
-|  12 | <font color="red"> TESTALIAS </font> | <font color="red"> yes </font> | yes, ignores =red= |
-|  13 | %RED% %TESTALIAS% %ENDCOLOR%  | %RED% %T<nop>ESTALIAS% %ENDCOLOR% | no, inside two =%= |
-|  14 | %RED%%TESTALIAS%%ENDCOLOR%  | %RED%%T<nop>ESTALIAS%%ENDCOLOR% | no, this is inside two =%= | 
-|  15 | <font color="red"> %TESTALIAS% </font>  | <font color="red"> %T<nop>ESTALIAS% </font> | no, inside two =%= | 
-|  16 | <font color="red">%TESTALIAS%</font>  | <font color="red">%T<nop>ESTALIAS%</font> | no, inside two =%= |
-|  17 | %TESTALIAS | %yes | yes, no =perc= on the same line | 
-|  18 | %TESTALIAS | %yes | yes, with a second =%= here | 
-|  19 | %BLABLA TESTALIAS% | %BLABLA yes% | yes, this is no regular tag |
-|  20 | %BLABLA{TESTALIAS}% | %BLABLA{T<nop>ESTALIAS}% | no, this is a regular tag |
-|  21 | %<nop>BLABLA{TESTALIAS}% | %<nop>BLABLA{T<nop>ESTALIAS}% | no, albeit this is a _nopped_ tag |
-%STOPALIASAREA%
 
 ---++ Plugin Info
 <!--
@@ -146,6 +98,7 @@ macro or listed in the following way:
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  17 Nov 2009: | complete rewrite not to apply aliases during =view= but during =save= |
 |  17 Apr 2009: | converted to Foswiki plugin |
 |  28 Apr 2008: | speed improvements |
 |  13 Nov 2007: | Item4959: disabled settings in plugin topic, \
