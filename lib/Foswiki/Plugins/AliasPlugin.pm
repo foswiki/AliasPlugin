@@ -1,7 +1,7 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (C) 2003 Othello Maurer <maurer@nats.informatik.uni-hamburg.de>
-# Copyright (C) 2003-2009 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2003-2010 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ use Foswiki::Attrs ();
 
 # Foswiki maintenance
 our $VERSION = '$Rev$';
-our $RELEASE = '3.00';
+our $RELEASE = '3.01';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -269,12 +269,11 @@ sub beforeSaveHandler {
 
   #print STDERR "beforeSave 1 - text=$text\n";
 
-  my $renderer = $Foswiki::Plugins::SESSION->{renderer};
   my $removed = {};
 
   # remove ALIAS macros and verbatims temporarily
   my $macros = {};
-  $text = $renderer->takeOutBlocks($text, 'verbatim', $removed);
+  $text = takeOutBlocks($text, 'verbatim', $removed);
   $text =~ s/(%ALIAS{(.*?)}%)/takeOutAliasMacro($1, $2, $macros)/gmse;
 
   #print STDERR "beforeSave 2 - text=$text\n";
@@ -285,7 +284,7 @@ sub beforeSaveHandler {
 
   # put back stuff
   $_[0] =~ s/$TranslationToken(\d+)$TranslationToken/$$macros{$1}/g;
-  $renderer->putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
+  putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
 
   # store new text
   $meta->text($text);
@@ -311,11 +310,10 @@ sub beforeEditHandler {
   #print STDERR "beforeEdit 1 - text='$text'\n";
 
   my $removed = {};
-  my $renderer = $Foswiki::Plugins::SESSION->{renderer};
 
-  $text = $renderer->takeOutBlocks($text, 'verbatim', $removed);
+  $text = takeOutBlocks($text, 'verbatim', $removed);
   removeAliases($text);
-  $renderer->putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
+  putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
   $meta->text($text);
   #print STDERR "beforeEdit 2 - text='$text'\n";
 
@@ -370,6 +368,19 @@ sub takeOutAliasMacro {
   return $TranslationToken."$index".$TranslationToken;
 }
 
+###############################################################################
+# compatibility wrapper 
+sub takeOutBlocks {
+  return Foswiki::takeOutBlocks(@_) if defined &Foswiki::takeOutBlocks;
+  return $Foswiki::Plugins::SESSION->{renderer}->takeOutBlocks(@_);
+}
+
+###############################################################################
+# compatibility wrapper 
+sub putBackBlocks {
+  return Foswiki::putBackBlocks(@_) if defined &Foswiki::putBackBlocks;
+  return $Foswiki::Plugins::SESSION->{renderer}->putBackBlocks(@_);
+}
 
 ###############################################################################
 sub inlineError {

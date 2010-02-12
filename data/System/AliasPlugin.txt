@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" comment="save topic" date="1258043468" format="1.1" reprev="1.2" version="1.2"}%
+%META:TOPICINFO{author="ProjectContributor" date="1259345825" format="1.1" version="1.3"}%
 <!--
 
    PLEASE DO NOT EDIT THIS TOPIC
@@ -56,7 +56,6 @@ non-alphabetic characters. Some textile examples:
 %STARTSECTION{"textile"}%
 %ALIAS{name="''" regex="$start''$stop" value="&rdquo;"}%
 %ALIAS{name="``" regex="$start``$stop" value="&ldquo;"}%
-%ALIAS{name="-" regex=" - " value=" &ndash; "}%
 %ALIAS{name="--" regex=" -- " value=" &mdash; "}%
 %ALIAS{name="(c)" regex="$start\(c\)$stop" value="&copy;"}%
 %ALIAS{name="(r)" regex="$start\(r\)$stop" value="&reg;"}%
@@ -93,11 +92,12 @@ macro or listed in the following way:
    * Set SHORTDESCRIPTION = Define aliases which will be replaced with arbitrary strings automatically
 -->
 |  Plugin Author: | Othello Maurer, Michael Daum |
-|  Copyright &copy;: | 2003, Othello Maurer; 2003-2009, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2003, Othello Maurer; 2003-2010, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  12 Feb 2010: | compatibility with newer foswiki engines |
 |  17 Nov 2009: | complete rewrite not to apply aliases during =view= but during =save= |
 |  17 Apr 2009: | converted to Foswiki plugin |
 |  28 Apr 2008: | speed improvements |
