@@ -23,7 +23,7 @@ use Foswiki::Attrs ();
 
 # Foswiki maintenance
 our $VERSION = '$Rev$';
-our $RELEASE = '3.01';
+our $RELEASE = '3.02';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -241,7 +241,12 @@ sub getAliases {
   return 0 unless Foswiki::Func::topicExists($web, $topic);
 
   my (undef, $text) = Foswiki::Func::readTopic($web, $topic);
-  Foswiki::Func::expandCommonVariables($text, $baseTopic, $baseWeb);
+  return 0 unless $text =~ /%(UN)?ALIAS({.*?})?%/;
+  
+  # hack: disable ADDTOHEAD and ADDTOZONE
+  $text =~ s/%(ADDTO(HEAD|ZONE))/%<nop>$1/g;
+
+  Foswiki::Func::expandCommonVariables($text, $web, $topic);
 
   return 1;
 }
@@ -249,6 +254,8 @@ sub getAliases {
 ###############################################################################
 sub completePageHandler {
   #my ($text, $hdr) = @_;
+
+  return unless $_[0];
 
   # cleanup
   $_[0] =~ s/<!-- \/\/ALIAS -->//g;
