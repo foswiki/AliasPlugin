@@ -23,7 +23,7 @@ use Foswiki::Attrs ();
 
 # Foswiki maintenance
 our $VERSION = '$Rev$';
-our $RELEASE = '3.02';
+our $RELEASE = '3.03';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -379,7 +379,7 @@ sub takeOutAliasMacro {
 # compatibility wrapper 
 sub takeOutBlocks {
   return Foswiki::takeOutBlocks(@_) if defined &Foswiki::takeOutBlocks;
-  return $Foswiki::Plugins::SESSION->{renderer}->takeOutBlocks(@_);
+  return $Foswiki::Plugins::SESSION->renderer->takeOutBlocks(@_);
 }
 
 ###############################################################################

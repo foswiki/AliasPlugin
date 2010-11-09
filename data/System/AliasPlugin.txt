@@ -85,6 +85,7 @@ non-alphabetic characters. Some textile examples:
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  09 Nov 2010: | fixing error using =takOutBlocks= |
 |  07 Jun 2010: | don't expand ADDTOZONE/ADDTOHEAD when parsing in alias definitions |
 |  12 Feb 2010: | compatibility with newer foswiki engines |
 |  17 Nov 2009: | complete rewrite not to apply aliases during =view= but during =save= |
