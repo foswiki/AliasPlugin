@@ -1,7 +1,7 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (C) 2003 Othello Maurer <maurer@nats.informatik.uni-hamburg.de>
-# Copyright (C) 2003-2010 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2003-2011 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ use Foswiki::Attrs ();
 
 # Foswiki maintenance
 our $VERSION = '$Rev$';
-our $RELEASE = '3.03';
+our $RELEASE = '3.04';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -154,8 +154,8 @@ sub handleAlias {
   my $theRegex = $params->{regex} || '';
 
   if ($theKey && $theValue) {
-    $theRegex =~ s/\$start/$START/go;
-    $theRegex =~ s/\$stop/$STOP/go;
+    $theRegex =~ s/\$start/$START/g;
+    $theRegex =~ s/\$stop/$STOP/g;
     addAliasPattern($theKey, $theValue, $theRegex);
     #writeDebug("handleAlias(): added alias $theKey -> $theValue");
     return "";
@@ -231,22 +231,21 @@ sub getAliases {
   $web ||= $baseWeb;
   ($web, $topic) = Foswiki::Func::normalizeWebTopicName($web, $topic);
 
+  writeDebug("getAliases($web, $topic)");
+
   # have we alread red these aliaes
   return 0 if defined $seenAliasWebTopics{"$web.$topic"};
   $seenAliasWebTopics{"$web.$topic"} = 1;
-
-  #writeDebug("getAliases($web, $topic)");
 
   # parse the topic containing the alias definitions
   return 0 unless Foswiki::Func::topicExists($web, $topic);
 
   my (undef, $text) = Foswiki::Func::readTopic($web, $topic);
-  return 0 unless $text =~ /%(UN)?ALIAS({.*?})?%/;
-  
+
   # hack: disable ADDTOHEAD and ADDTOZONE
   $text =~ s/%(ADDTO(HEAD|ZONE))/%<nop>$1/g;
 
-  Foswiki::Func::expandCommonVariables($text, $web, $topic);
+  Foswiki::Func::expandCommonVariables($text, $topic, $web);
 
   return 1;
 }
@@ -256,6 +255,10 @@ sub completePageHandler {
   #my ($text, $hdr) = @_;
 
   return unless $_[0];
+
+  my $query = Foswiki::Func::getCgiQuery();
+  my $raw = $query->param("raw");
+  return if defined $raw && $raw =~ /^(all)$/;
 
   # cleanup
   $_[0] =~ s/<!-- \/\/ALIAS -->//g;
@@ -272,7 +275,7 @@ sub beforeSaveHandler {
   return if $web eq $Foswiki::cfg{SystemWebName};
 
   # do the text
-  my $text = $meta->text();
+  my $text = $meta->text() || '';
 
   #print STDERR "beforeSave 1 - text=$text\n";
 
@@ -280,6 +283,7 @@ sub beforeSaveHandler {
 
   # remove ALIAS macros and verbatims temporarily
   my $macros = {};
+
   $text = takeOutBlocks($text, 'verbatim', $removed);
   $text =~ s/(%ALIAS{(.*?)}%)/takeOutAliasMacro($1, $2, $macros)/gmse;
 
@@ -290,7 +294,7 @@ sub beforeSaveHandler {
   #print STDERR "beforeSave 3 - text=$text\n";
 
   # put back stuff
-  $_[0] =~ s/$TranslationToken(\d+)$TranslationToken/$$macros{$1}/g;
+  $text =~ s/$TranslationToken(\d+)$TranslationToken/$$macros{$1}/g;
   putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
 
   # store new text
@@ -313,7 +317,7 @@ sub beforeEditHandler {
 
   # revert any alias before editing
   # ... from text
-  my $text = $meta->text();
+  my $text = $meta->text() || '';
   #print STDERR "beforeEdit 1 - text='$text'\n";
 
   my $removed = {};
@@ -356,6 +360,8 @@ sub insertAliases {
 
 ###############################################################################
 sub removeAliases {
+  return unless $_[0];
+
   $_[0] =~ s/<!-- ALIAS:(.*?) -->.*?<!-- \/\/ALIAS -->/$1/gms;
   $_[0] =~ s/&#60;!-- ALIAS:(.*?) --&#62;.*?&#60;!-- \/\/ALIAS --&#62;/$1/gms;
 }
@@ -378,15 +384,19 @@ sub takeOutAliasMacro {
 ###############################################################################
 # compatibility wrapper 
 sub takeOutBlocks {
-  return Foswiki::takeOutBlocks(@_) if defined &Foswiki::takeOutBlocks;
-  return $Foswiki::Plugins::SESSION->renderer->takeOutBlocks(@_);
+  my ($text, $tag, $map) = @_;
+
+  return '' unless $text;
+
+  return Foswiki::takeOutBlocks($text, $tag, $map) if defined &Foswiki::takeOutBlocks;
+  return $Foswiki::Plugins::SESSION->renderer->takeOutBlocks($text, $tag, $map);
 }
 
 ###############################################################################
 # compatibility wrapper 
 sub putBackBlocks {
   return Foswiki::putBackBlocks(@_) if defined &Foswiki::putBackBlocks;
-  return $Foswiki::Plugins::SESSION->{renderer}->putBackBlocks(@_);
+  return $Foswiki::Plugins::SESSION->renderer->putBackBlocks(@_);
 }
 
 ###############################################################################
