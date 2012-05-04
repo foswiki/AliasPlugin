@@ -11,23 +11,25 @@
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details, published at 
+# GNU General Public License for more details, published at
 # http://www.gnu.org/copyleft/gpl.html
 ###############################################################################
-package Foswiki::Plugins::AliasPlugin;    # change the package name and $pluginName!!!
+package Foswiki::Plugins::AliasPlugin
+  ;    # change the package name and $pluginName!!!
 
 use strict;
-use Foswiki::Func ();
+use Foswiki::Func    ();
 use Foswiki::Plugins ();
-use Foswiki::Attrs ();
+use Foswiki::Attrs   ();
 
 # Foswiki maintenance
 our $VERSION = '$Rev$';
 our $RELEASE = '3.04';
-our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
+our $SHORTDESCRIPTION =
+  'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
-use constant DEBUG => 0; # toggle me
+use constant DEBUG => 0;    # toggle me
 
 # request variables
 our $baseWeb;
@@ -50,359 +52,372 @@ our $topicRegex;
 our $webRegex;
 our $defaultWebNameRegex;
 our $START = '(?:^|(?<=[\w\b\s\,\.\;\:\!\?\)\(]))';
-our $STOP = '(?:$|(?=[\w\b\s\,\.\;\:\!\?\)\(]))';
+our $STOP  = '(?:$|(?=[\w\b\s\,\.\;\:\!\?\)\(]))';
 
 ###############################################################################
 sub writeDebug {
-  print STDERR "AliasPlugin - ".$_[0]."\n" if DEBUG;
+    print STDERR "AliasPlugin - " . $_[0] . "\n" if DEBUG;
 }
 
 ###############################################################################
 sub initPlugin {
-  ($baseTopic, $baseWeb) = @_;
+    ( $baseTopic, $baseWeb ) = @_;
 
-  # more in doInit
-  $isInitialized = 0;
-  %seenAliasWebTopics = ();
+    # more in doInit
+    $isInitialized      = 0;
+    %seenAliasWebTopics = ();
 
-  Foswiki::Func::registerTagHandler('ALIAS', \&handleAlias);
-  Foswiki::Func::registerTagHandler('UNALIAS', \&handleUnAlias);
-  Foswiki::Func::registerTagHandler('ALIASES', \&handleAliases);
+    Foswiki::Func::registerTagHandler( 'ALIAS',   \&handleAlias );
+    Foswiki::Func::registerTagHandler( 'UNALIAS', \&handleUnAlias );
+    Foswiki::Func::registerTagHandler( 'ALIASES', \&handleAliases );
 
-  return 1;
+    return 1;
 }
 
 ###############################################################################
 sub doInit {
 
-  return if $isInitialized;
-  $isInitialized = 1;
+    return if $isInitialized;
+    $isInitialized = 1;
 
-  #writeDebug("doinit() called");
+    #writeDebug("doinit() called");
 
-  # get plugin flags
-  $aliasWikiWordsOnly = 
-    Foswiki::Func::getPreferencesFlag("ALIASPLUGIN_ALIAS_WIKIWORDS_ONLY") || 0;
-  
-  # decide on how to match alias words
-  $wikiWordRegex = $Foswiki::regex{'wikiWordRegex'};
-  $topicRegex = $Foswiki::regex{'mixedAlphaNumRegex'};
-  $webRegex = $Foswiki::regex{'webNameRegex'};
-  $defaultWebNameRegex = $Foswiki::regex{'defaultWebNameRegex'};
+    # get plugin flags
+    $aliasWikiWordsOnly =
+      Foswiki::Func::getPreferencesFlag("ALIASPLUGIN_ALIAS_WIKIWORDS_ONLY")
+      || 0;
 
-  if ($aliasWikiWordsOnly) {
-    $wordRegex = $wikiWordRegex;
-  } else {
-    $wordRegex = '\w+';
-  }
+    # decide on how to match alias words
+    $wikiWordRegex       = $Foswiki::regex{'wikiWordRegex'};
+    $topicRegex          = $Foswiki::regex{'mixedAlphaNumRegex'};
+    $webRegex            = $Foswiki::regex{'webNameRegex'};
+    $defaultWebNameRegex = $Foswiki::regex{'defaultWebNameRegex'};
 
-  # init globals
-  %aliasRegex = ();
-  %aliasValue = ();
+    if ($aliasWikiWordsOnly) {
+        $wordRegex = $wikiWordRegex;
+    }
+    else {
+        $wordRegex = '\w+';
+    }
 
-  # look for aliases in Main System web
-  unless (getAliases($Foswiki::cfg{UsersWebName}, 'SiteAliases')) {
-    getAliases($Foswiki::cfg{SystemWebName}, 'SiteAliases');
-  }
+    # init globals
+    %aliasRegex = ();
+    %aliasValue = ();
 
-  # look for aliases in current web
-  getAliases($baseWeb, 'WebAliases');
+    # look for aliases in Main System web
+    unless ( getAliases( $Foswiki::cfg{UsersWebName}, 'SiteAliases' ) ) {
+        getAliases( $Foswiki::cfg{SystemWebName}, 'SiteAliases' );
+    }
 
-  # look for aliases in the current topic
-  getAliases($baseWeb, $baseTopic);
+    # look for aliases in current web
+    getAliases( $baseWeb, 'WebAliases' );
+
+    # look for aliases in the current topic
+    getAliases( $baseWeb, $baseTopic );
 }
 
 ###############################################################################
 sub handleAliases {
-  my ($session, $params, $theTopic, $theWeb) = @_;
+    my ( $session, $params, $theTopic, $theWeb ) = @_;
 
-  #writeDebug("called handleAliases");
+    #writeDebug("called handleAliases");
 
-  doInit();
+    doInit();
 
-  my $theRegex = $params->{regex} || 'off';
+    my $theRegex = $params->{regex} || 'off';
 
-  my $text = "<noautolink>\n";
-  if ($theRegex eq 'on') {
-    $text .= "| *Name* | *Regex* | *Value* |\n";
-    foreach my $key (sort keys %aliasRegex) {
-      my $regexText = $aliasRegex{$key};
-      $regexText =~ s/([\x01-\x09\x0b\x0c\x0e-\x1f<>"&])/'&#'.ord($1).';'/ge;
-      $regexText =~ s/\|/&#124;/go;
-      $text .= "|<nop>$key  |$regexText  |$aliasValue{$key}  |\n";
+    my $text = "<noautolink>\n";
+    if ( $theRegex eq 'on' ) {
+        $text .= "| *Name* | *Regex* | *Value* |\n";
+        foreach my $key ( sort keys %aliasRegex ) {
+            my $regexText = $aliasRegex{$key};
+            $regexText =~
+              s/([\x01-\x09\x0b\x0c\x0e-\x1f<>"&])/'&#'.ord($1).';'/ge;
+            $regexText =~ s/\|/&#124;/go;
+            $text .= "|<nop>$key  |$regexText  |$aliasValue{$key}  |\n";
+        }
     }
-  } else {
-    $text .= "| *Name* | *Value* |\n";
-    foreach my $key (sort keys %aliasRegex) {
-      $text .= "|<nop>$key  |$aliasValue{$key}  |\n";
+    else {
+        $text .= "| *Name* | *Value* |\n";
+        foreach my $key ( sort keys %aliasRegex ) {
+            $text .= "|<nop>$key  |$aliasValue{$key}  |\n";
+        }
     }
-  }
-  $text .= "</noautolink>\n";
-  
-  return $text;
+    $text .= "</noautolink>\n";
+
+    return $text;
 }
 
 ###############################################################################
 sub handleAlias {
-  my ($session, $params, $theTopic, $theWeb) = @_;
+    my ( $session, $params, $theTopic, $theWeb ) = @_;
 
-  #writeDebug("called handleAlias");
+    #writeDebug("called handleAlias");
 
-  doInit();
-  my $theKey = $params->{_DEFAULT} || $params->{name};
-  my $theValue = $params->{value} || '';
-  my $theRegex = $params->{regex} || '';
+    doInit();
+    my $theKey   = $params->{_DEFAULT} || $params->{name};
+    my $theValue = $params->{value}    || '';
+    my $theRegex = $params->{regex}    || '';
 
-  if ($theKey && $theValue) {
-    $theRegex =~ s/\$start/$START/g;
-    $theRegex =~ s/\$stop/$STOP/g;
-    addAliasPattern($theKey, $theValue, $theRegex);
-    #writeDebug("handleAlias(): added alias $theKey -> $theValue");
-    return "";
-  }
+    if ( $theKey && $theValue ) {
+        $theRegex =~ s/\$start/$START/g;
+        $theRegex =~ s/\$stop/$STOP/g;
+        addAliasPattern( $theKey, $theValue, $theRegex );
 
-  return inlineError("Error in %<nop>ALIAS%: need a =name= and a =value=");
+        #writeDebug("handleAlias(): added alias $theKey -> $theValue");
+        return "";
+    }
+
+    return inlineError("Error in %<nop>ALIAS%: need a =name= and a =value=");
 }
 
 ###############################################################################
 sub handleUnAlias {
-  my ($session, $params, $theTopic, $theWeb) = @_;
+    my ( $session, $params, $theTopic, $theWeb ) = @_;
 
-  #writeDebug("called handleUnAlias");
+    #writeDebug("called handleUnAlias");
 
-  doInit();
+    doInit();
 
-  my $theKey = $params->{_DEFAULT} || $params->{name};
+    my $theKey = $params->{_DEFAULT} || $params->{name};
 
-  if ($theKey) {
-    delete $aliasRegex{$theKey};
-    delete $aliasValue{$theKey};
-  } else {
-    # unalias all
-    %aliasRegex = ();
-    %aliasValue = ();
-  }
+    if ($theKey) {
+        delete $aliasRegex{$theKey};
+        delete $aliasValue{$theKey};
+    }
+    else {
 
-  return '';
+        # unalias all
+        %aliasRegex = ();
+        %aliasValue = ();
+    }
+
+    return '';
 }
 
 ###############################################################################
 sub addAliasPattern {
-  my ($key, $value, $regex) = @_;
+    my ( $key, $value, $regex ) = @_;
 
-  $regex ||= '';
+    $regex ||= '';
 
-  #writeDebug("called addAliasPattern($key, $value, $regex)");
+    #writeDebug("called addAliasPattern($key, $value, $regex)");
 
-  if ($regex) {
-    $aliasRegex{$key} = $regex;
-    $aliasValue{$key} = $value;
-  } else {
-    $key =~ s/([\\\(\)\.\$])/\\$1/go;
-    $value = getConvenientAlias($key, $value);
-    $aliasRegex{$key} = '\b'.$key.'\b';
-    $aliasValue{$key} = $value;
-  }
+    if ($regex) {
+        $aliasRegex{$key} = $regex;
+        $aliasValue{$key} = $value;
+    }
+    else {
+        $key =~ s/([\\\(\)\.\$])/\\$1/go;
+        $value = getConvenientAlias( $key, $value );
+        $aliasRegex{$key} = '\b' . $key . '\b';
+        $aliasValue{$key} = $value;
+    }
 
-  #writeDebug("aliasRegex{$key}=$aliasRegex{$key} aliasValue{$key}=$aliasValue{$key}");
+#writeDebug("aliasRegex{$key}=$aliasRegex{$key} aliasValue{$key}=$aliasValue{$key}");
 }
 
 ###############################################################################
 sub getConvenientAlias {
-  my ($key, $value) = @_;
+    my ( $key, $value ) = @_;
 
-  #writeDebug("getConvenientAlias($key, $value) called");
+    #writeDebug("getConvenientAlias($key, $value) called");
 
-  # convenience for wiki-links
-  if ($value =~ /^($webRegex\.|$defaultWebNameRegex\.|#)$topicRegex/) {
-    $value = "\[\[$value\]\[$key\]\]";
-  }
+    # convenience for wiki-links
+    if ( $value =~ /^($webRegex\.|$defaultWebNameRegex\.|#)$topicRegex/ ) {
+        $value = "\[\[$value\]\[$key\]\]";
+    }
 
-  #writeDebug("returns '$value'");
+    #writeDebug("returns '$value'");
 
-  return $value;
+    return $value;
 }
 
 ###############################################################################
 sub getAliases {
-  my ($web, $topic) = @_;
+    my ( $web, $topic ) = @_;
 
-  $topic ||= 'WebAliases';
-  $web ||= $baseWeb;
-  ($web, $topic) = Foswiki::Func::normalizeWebTopicName($web, $topic);
+    $topic ||= 'WebAliases';
+    $web   ||= $baseWeb;
+    ( $web, $topic ) = Foswiki::Func::normalizeWebTopicName( $web, $topic );
 
-  writeDebug("getAliases($web, $topic)");
+    writeDebug("getAliases($web, $topic)");
 
-  # have we alread red these aliaes
-  return 0 if defined $seenAliasWebTopics{"$web.$topic"};
-  $seenAliasWebTopics{"$web.$topic"} = 1;
+    # have we alread red these aliaes
+    return 0 if defined $seenAliasWebTopics{"$web.$topic"};
+    $seenAliasWebTopics{"$web.$topic"} = 1;
 
-  # parse the topic containing the alias definitions
-  return 0 unless Foswiki::Func::topicExists($web, $topic);
+    # parse the topic containing the alias definitions
+    return 0 unless Foswiki::Func::topicExists( $web, $topic );
 
-  my (undef, $text) = Foswiki::Func::readTopic($web, $topic);
+    my ( undef, $text ) = Foswiki::Func::readTopic( $web, $topic );
 
-  # hack: disable ADDTOHEAD and ADDTOZONE
-  $text =~ s/%(ADDTO(HEAD|ZONE))/%<nop>$1/g;
+    # hack: disable ADDTOHEAD and ADDTOZONE
+    $text =~ s/%(ADDTO(HEAD|ZONE))/%<nop>$1/g;
 
-  Foswiki::Func::expandCommonVariables($text, $topic, $web);
+    Foswiki::Func::expandCommonVariables( $text, $topic, $web );
 
-  return 1;
+    return 1;
 }
 
 ###############################################################################
 sub completePageHandler {
-  #my ($text, $hdr) = @_;
 
-  return unless $_[0];
+    #my ($text, $hdr) = @_;
 
-  my $query = Foswiki::Func::getCgiQuery();
-  my $raw = $query->param("raw");
-  return if defined $raw && $raw =~ /^(all)$/;
+    return unless $_[0];
 
-  # cleanup
-  $_[0] =~ s/<!-- \/\/ALIAS -->//g;
-  $_[0] =~ s/<!-- ALIAS:.*? -->//g;
+    my $query = Foswiki::Func::getCgiQuery();
+    my $raw   = $query->param("raw");
+    return if defined $raw && $raw =~ /^(all)$/;
 
-  removeAliases($_[0]);
+    # cleanup
+    $_[0] =~ s/<!-- \/\/ALIAS -->//g;
+    $_[0] =~ s/<!-- ALIAS:.*? -->//g;
+
+    removeAliases( $_[0] );
 }
 
 ###############################################################################
 sub beforeSaveHandler {
-  my (undef, $topic, $web, $meta) = @_;
+    my ( undef, $topic, $web, $meta ) = @_;
 
-  doInit();
-  return if $web eq $Foswiki::cfg{SystemWebName};
+    doInit();
+    return if $web eq $Foswiki::cfg{SystemWebName};
 
-  # do the text
-  my $text = $meta->text() || '';
+    # do the text
+    my $text = $meta->text() || '';
 
-  #print STDERR "beforeSave 1 - text=$text\n";
+    #print STDERR "beforeSave 1 - text=$text\n";
 
-  my $removed = {};
+    my $removed = {};
 
-  # remove ALIAS macros and verbatims temporarily
-  my $macros = {};
+    # remove ALIAS macros and verbatims temporarily
+    my $macros = {};
 
-  $text = takeOutBlocks($text, 'verbatim', $removed);
-  $text =~ s/(%ALIAS{(.*?)}%)/takeOutAliasMacro($1, $2, $macros)/gmse;
+    $text = takeOutBlocks( $text, 'verbatim', $removed );
+    $text =~ s/(%ALIAS{(.*?)}%)/takeOutAliasMacro($1, $2, $macros)/gmse;
 
-  #print STDERR "beforeSave 2 - text=$text\n";
+    #print STDERR "beforeSave 2 - text=$text\n";
 
-  insertAliases($text);
+    insertAliases($text);
 
-  #print STDERR "beforeSave 3 - text=$text\n";
+    #print STDERR "beforeSave 3 - text=$text\n";
 
-  # put back stuff
-  $text =~ s/$TranslationToken(\d+)$TranslationToken/$$macros{$1}/g;
-  putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
+    # put back stuff
+    $text =~ s/$TranslationToken(\d+)$TranslationToken/$$macros{$1}/g;
+    putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
 
-  # store new text
-  $meta->text($text);
+    # store new text
+    $meta->text($text);
 
-  #print STDERR "beforeSave 4 - text=$text\n";
+    #print STDERR "beforeSave 4 - text=$text\n";
 
-  # do all formfields
-  my @fields = $meta->find('FIELD');
-  foreach my $field (@fields) {
-    insertAliases($field->{value});
-  }
+    # do all formfields
+    my @fields = $meta->find('FIELD');
+    foreach my $field (@fields) {
+        insertAliases( $field->{value} );
+    }
 }
 
 ###############################################################################
 sub beforeEditHandler {
-  my (undef, $topic, $web, $meta) = @_;
+    my ( undef, $topic, $web, $meta ) = @_;
 
-  return if $web eq $Foswiki::cfg{SystemWebName};
+    return if $web eq $Foswiki::cfg{SystemWebName};
 
-  # revert any alias before editing
-  # ... from text
-  my $text = $meta->text() || '';
-  #print STDERR "beforeEdit 1 - text='$text'\n";
+    # revert any alias before editing
+    # ... from text
+    my $text = $meta->text() || '';
 
-  my $removed = {};
+    #print STDERR "beforeEdit 1 - text='$text'\n";
 
-  $text = takeOutBlocks($text, 'verbatim', $removed);
-  removeAliases($text);
-  putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
-  $meta->text($text);
-  #print STDERR "beforeEdit 2 - text='$text'\n";
+    my $removed = {};
 
-  # ... from formfields
-  my @fields = $meta->find('FIELD');
-  foreach my $field (@fields) {
-    removeAliases($field->{value});
-  }
+    $text = takeOutBlocks( $text, 'verbatim', $removed );
+    removeAliases($text);
+    putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
+    $meta->text($text);
 
-  # SMELL: beforeEditHandler does not respect changes in the $meta object.
-  # see Item1965. 
+    #print STDERR "beforeEdit 2 - text='$text'\n";
 
-  $_[0] = $text;
+    # ... from formfields
+    my @fields = $meta->find('FIELD');
+    foreach my $field (@fields) {
+        removeAliases( $field->{value} );
+    }
+
+    # SMELL: beforeEditHandler does not respect changes in the $meta object.
+    # see Item1965.
+
+    $_[0] = $text;
 }
 
 ###############################################################################
 sub insertAliases {
 
-  writeDebug("called insertAliases($_[0])");
+    writeDebug("called insertAliases($_[0])");
 
-  # first remove to prevent double-apply
-  removeAliases($_[0]);
-  writeDebug("... removed aliases $_[0]");
+    # first remove to prevent double-apply
+    removeAliases( $_[0] );
+    writeDebug("... removed aliases $_[0]");
 
-  # do the substitutions
-  my @aliasKeys = keys %aliasRegex;
-  foreach my $key (@aliasKeys) {
-    $_[0] =~ s/($aliasRegex{$key})/<!-- ALIAS:$1 -->$aliasValue{$key}<!-- \/\/ALIAS -->/gms;
-  }
+    # do the substitutions
+    my @aliasKeys = keys %aliasRegex;
+    foreach my $key (@aliasKeys) {
+        $_[0] =~
+s/($aliasRegex{$key})/<!-- ALIAS:$1 -->$aliasValue{$key}<!-- \/\/ALIAS -->/gms;
+    }
 
-  writeDebug("... finally $_[0]");
+    writeDebug("... finally $_[0]");
 }
 
 ###############################################################################
 sub removeAliases {
-  return unless $_[0];
+    return unless $_[0];
 
-  $_[0] =~ s/<!-- ALIAS:(.*?) -->.*?<!-- \/\/ALIAS -->/$1/gms;
-  $_[0] =~ s/&#60;!-- ALIAS:(.*?) --&#62;.*?&#60;!-- \/\/ALIAS --&#62;/$1/gms;
+    $_[0] =~ s/<!-- ALIAS:(.*?) -->.*?<!-- \/\/ALIAS -->/$1/gms;
+    $_[0] =~ s/&#60;!-- ALIAS:(.*?) --&#62;.*?&#60;!-- \/\/ALIAS --&#62;/$1/gms;
 }
 
 ###############################################################################
 sub takeOutAliasMacro {
-  my ($text, $args, $map) = @_;
+    my ( $text, $args, $map ) = @_;
 
-  # add these aliases to the stack
-  if (defined $args) {
-    my $params = new Foswiki::Attrs($args);
-    handleAlias(undef, $params);
-  }
+    # add these aliases to the stack
+    if ( defined $args ) {
+        my $params = new Foswiki::Attrs($args);
+        handleAlias( undef, $params );
+    }
 
-  my $index = scalar(keys %$map);
-  $$map{$index} = $text;
-  return $TranslationToken."$index".$TranslationToken;
+    my $index = scalar( keys %$map );
+    $$map{$index} = $text;
+    return $TranslationToken . "$index" . $TranslationToken;
 }
 
 ###############################################################################
-# compatibility wrapper 
+# compatibility wrapper
 sub takeOutBlocks {
-  my ($text, $tag, $map) = @_;
+    my ( $text, $tag, $map ) = @_;
 
-  return '' unless $text;
+    return '' unless $text;
 
-  return Foswiki::takeOutBlocks($text, $tag, $map) if defined &Foswiki::takeOutBlocks;
-  return $Foswiki::Plugins::SESSION->renderer->takeOutBlocks($text, $tag, $map);
+    return Foswiki::takeOutBlocks( $text, $tag, $map )
+      if defined &Foswiki::takeOutBlocks;
+    return $Foswiki::Plugins::SESSION->renderer->takeOutBlocks( $text, $tag,
+        $map );
 }
 
 ###############################################################################
-# compatibility wrapper 
+# compatibility wrapper
 sub putBackBlocks {
-  return Foswiki::putBackBlocks(@_) if defined &Foswiki::putBackBlocks;
-  return $Foswiki::Plugins::SESSION->renderer->putBackBlocks(@_);
+    return Foswiki::putBackBlocks(@_) if defined &Foswiki::putBackBlocks;
+    return $Foswiki::Plugins::SESSION->renderer->putBackBlocks(@_);
 }
 
 ###############################################################################
 sub inlineError {
-  return "<div class='foswikiAlert'>$_[0]</div>";
+    return "<div class='foswikiAlert'>$_[0]</div>";
 }
-
 
 1;
