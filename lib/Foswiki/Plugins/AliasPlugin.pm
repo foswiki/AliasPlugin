@@ -11,14 +11,12 @@
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details, published at
+# GNU General Public License for more details, published at 
 # http://www.gnu.org/copyleft/gpl.html
 ###############################################################################
-package Foswiki::Plugins::AliasPlugin;
+package Foswiki::Plugins::AliasPlugin;    # change the package name and $pluginName!!!
 
 use strict;
-use warnings;
-
 use Foswiki::Func ();
 use Foswiki::Plugins ();
 use Foswiki::Attrs ();
@@ -29,7 +27,7 @@ our $RELEASE = '3.04';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
-use constant DEBUG => 0;    # toggle me
+use constant DEBUG => 0; # toggle me
 
 # request variables
 our $baseWeb;
@@ -56,7 +54,7 @@ our $STOP = '(?:$|(?=[\w\b\s\,\.\;\:\!\?\)\(]))';
 
 ###############################################################################
 sub writeDebug {
-  print STDERR "AliasPlugin - " . $_[0] . "\n" if DEBUG;
+  print STDERR "AliasPlugin - ".$_[0]."\n" if DEBUG;
 }
 
 ###############################################################################
@@ -83,8 +81,9 @@ sub doInit {
   #writeDebug("doinit() called");
 
   # get plugin flags
-  $aliasWikiWordsOnly = Foswiki::Func::getPreferencesFlag("ALIASPLUGIN_ALIAS_WIKIWORDS_ONLY") || 0;
-
+  $aliasWikiWordsOnly = 
+    Foswiki::Func::getPreferencesFlag("ALIASPLUGIN_ALIAS_WIKIWORDS_ONLY") || 0;
+  
   # decide on how to match alias words
   $wikiWordRegex = $Foswiki::regex{'wikiWordRegex'};
   $topicRegex = $Foswiki::regex{'mixedAlphaNumRegex'};
@@ -139,7 +138,7 @@ sub handleAliases {
     }
   }
   $text .= "</noautolink>\n";
-
+  
   return $text;
 }
 
@@ -158,7 +157,6 @@ sub handleAlias {
     $theRegex =~ s/\$start/$START/g;
     $theRegex =~ s/\$stop/$STOP/g;
     addAliasPattern($theKey, $theValue, $theRegex);
-
     #writeDebug("handleAlias(): added alias $theKey -> $theValue");
     return "";
   }
@@ -180,7 +178,6 @@ sub handleUnAlias {
     delete $aliasRegex{$theKey};
     delete $aliasValue{$theKey};
   } else {
-
     # unalias all
     %aliasRegex = ();
     %aliasValue = ();
@@ -203,7 +200,7 @@ sub addAliasPattern {
   } else {
     $key =~ s/([\\\(\)\.\$])/\\$1/go;
     $value = getConvenientAlias($key, $value);
-    $aliasRegex{$key} = '\b' . $key . '\b';
+    $aliasRegex{$key} = '\b'.$key.'\b';
     $aliasValue{$key} = $value;
   }
 
@@ -255,7 +252,6 @@ sub getAliases {
 
 ###############################################################################
 sub completePageHandler {
-
   #my ($text, $hdr) = @_;
 
   return unless $_[0];
@@ -299,7 +295,7 @@ sub beforeSaveHandler {
 
   # put back stuff
   $text =~ s/$TranslationToken(\d+)$TranslationToken/$$macros{$1}/g;
-  putBackBlocks(\$text, $removed, 'verbatim', 'verbatim');
+  putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
 
   # store new text
   $meta->text($text);
@@ -322,16 +318,14 @@ sub beforeEditHandler {
   # revert any alias before editing
   # ... from text
   my $text = $meta->text() || '';
-
   #print STDERR "beforeEdit 1 - text='$text'\n";
 
   my $removed = {};
 
   $text = takeOutBlocks($text, 'verbatim', $removed);
   removeAliases($text);
-  putBackBlocks(\$text, $removed, 'verbatim', 'verbatim');
+  putBackBlocks( \$text, $removed, 'verbatim', 'verbatim' );
   $meta->text($text);
-
   #print STDERR "beforeEdit 2 - text='$text'\n";
 
   # ... from formfields
@@ -341,7 +335,7 @@ sub beforeEditHandler {
   }
 
   # SMELL: beforeEditHandler does not respect changes in the $meta object.
-  # see Item1965.
+  # see Item1965. 
 
   $_[0] = $text;
 }
@@ -384,11 +378,11 @@ sub takeOutAliasMacro {
 
   my $index = scalar(keys %$map);
   $$map{$index} = $text;
-  return $TranslationToken . "$index" . $TranslationToken;
+  return $TranslationToken."$index".$TranslationToken;
 }
 
 ###############################################################################
-# compatibility wrapper
+# compatibility wrapper 
 sub takeOutBlocks {
   my ($text, $tag, $map) = @_;
 
@@ -399,7 +393,7 @@ sub takeOutBlocks {
 }
 
 ###############################################################################
-# compatibility wrapper
+# compatibility wrapper 
 sub putBackBlocks {
   return Foswiki::putBackBlocks(@_) if defined &Foswiki::putBackBlocks;
   return $Foswiki::Plugins::SESSION->renderer->putBackBlocks(@_);
@@ -409,5 +403,6 @@ sub putBackBlocks {
 sub inlineError {
   return "<div class='foswikiAlert'>$_[0]</div>";
 }
+
 
 1;
