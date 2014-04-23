@@ -1,18 +1,9 @@
-%META:TOPICINFO{author="ProjectContributor" comment="save topic" date="1312904371" format="1.1" reprev="4" version="4"}%
+%META:TOPICINFO{author="ProjectContributor" comment="autosave" date="1356278769" format="1.1" version="5"}%
 ---+!! <nop>AliasPlugin
 
 %TOC%
 
 ---++ Description
-
-<table style="float:right">
-<tr>
-  <td><img src="%ATTACHURLPATH%/wikiringlogo40x40.png"></td>
-  <td><a href="http://wikiring.com" title="Make your Wiki ring!" style="text-decoration:none">
-      Powered by <br /> <nop>WikiRing Consultants </a>
-  </td>
-</tr>
-</table>
 This plugin allows you to create arbitrary word aliases.
 If you write down a word that has a defined alias, it will then be replaced with 
 the given text string. If that string is a string of the format =&lt;web&gt;.&lt;topic&gt;=
@@ -81,7 +72,7 @@ non-alphabetic characters. Some textile examples:
    * Set SHORTDESCRIPTION = Define aliases which will be replaced with arbitrary strings automatically
 -->
 |  Plugin Author: | Othello Maurer, Michael Daum |
-|  Copyright &copy;: | 2003, Othello Maurer; 2003-2011, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2003, Othello Maurer; 2003-2014, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
@@ -125,5 +116,3 @@ non-alphabetic characters. Some textile examples:
 |  Perl Version: | 5.005 |
 |  Home: | Foswiki:Extensions/%TOPIC% |
 |  Support: | Foswiki:Support/%TOPIC% |
-
-%META:FILEATTACHMENT{name="wikiringlogo40x40.png" attachment="wikiringlogo40x40.png" attr="h" comment="" date="1189787359" path="wikiringlogo40x40.png" size="2571" stream="wikiringlogo40x40.png" tmpFilename="" user="ProjectContributor" version="1"}%

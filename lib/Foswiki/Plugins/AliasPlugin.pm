@@ -1,7 +1,7 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (C) 2003 Othello Maurer <maurer@nats.informatik.uni-hamburg.de>
-# Copyright (C) 2003-2011 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2003-2014 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,12 +22,12 @@ use Foswiki::Plugins ();
 use Foswiki::Attrs ();
 
 # Foswiki maintenance
-our $VERSION = '$Rev$';
+our $VERSION = '3.04';
 our $RELEASE = '3.04';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 
 # request variables
 our $baseWeb;
@@ -54,7 +54,7 @@ our $STOP = '(?:$|(?=[\w\b\s\,\.\;\:\!\?\)\(]))';
 
 ###############################################################################
 sub writeDebug {
-  print STDERR "AliasPlugin - ".$_[0]."\n" if DEBUG;
+  print STDERR "AliasPlugin - ".$_[0]."\n" if TRACE;
 }
 
 ###############################################################################
