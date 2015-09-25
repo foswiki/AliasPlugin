@@ -1,0 +1,9 @@
+*.swp
+*,v
+AliasPlugin.md5
+AliasPlugin.sha1
+AliasPlugin.tgz
+AliasPlugin.txt
+AliasPlugin.zip
+AliasPlugin_installer
+AliasPlugin_installer.pl

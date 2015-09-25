@@ -23,7 +23,7 @@ use Foswiki::Attrs ();
 
 # Foswiki maintenance
 our $VERSION = '3.04';
-our $RELEASE = '3.04';
+our $RELEASE = '25 Aug 2011';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
 our $NO_PREFS_IN_TOPIC = 1;
 

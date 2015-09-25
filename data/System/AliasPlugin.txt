@@ -1,5 +1,6 @@
 %META:TOPICINFO{author="ProjectContributor" comment="autosave" date="1356278769" format="1.1" version="5"}%
 ---+!! <nop>AliasPlugin
+%SHORTDESCRIPTION%
 
 %TOC%
 
@@ -66,17 +67,8 @@ non-alphabetic characters. Some textile examples:
 
 %$INSTALL_INSTRUCTIONS%
 
----++ Plugin Info
+---++ Change History
 
-<!--
-   * Set SHORTDESCRIPTION = Define aliases which will be replaced with arbitrary strings automatically
--->
-|  Plugin Author: | Othello Maurer, Michael Daum |
-|  Copyright &copy;: | 2003, Othello Maurer; 2003-2014, Michael Daum http://michaeldaumconsulting.com |
-|  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Release: | %$RELEASE% |
-|  Version: | %$VERSION% |
-|  Change History: | &nbsp; |
 |  25 Aug 2011: | minor compatibility fixes |
 |  09 Nov 2010: | fixing error using =takOutBlocks= |
 |  07 Jun 2010: | don't expand ADDTOZONE/ADDTOHEAD when parsing in alias definitions |
@@ -111,8 +103,17 @@ non-alphabetic characters. Some textile examples:
 |  &nbsp; | More alias prefixes allowed |
 |  16 Oct 2003: | Speedup |
 |  09 Oct 2003: | Initial Version |
-|  CPAN Dependencies: | none |
-|  Other Dependencies: | none |
-|  Perl Version: | 5.005 |
-|  Home: | Foswiki:Extensions/%TOPIC% |
-|  Support: | Foswiki:Support/%TOPIC% |
+
+<!--
+   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
+-->
+
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Othello Maurer, Michael Daum"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2003, Othello Maurer; 2003-2015, Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/AliasPlugin"}%
+%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
