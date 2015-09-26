@@ -1,6 +1,6 @@
 %META:TOPICINFO{author="ProjectContributor" comment="autosave" date="1356278769" format="1.1" version="5"}%
 ---+!! <nop>AliasPlugin
-%SHORTDESCRIPTION%
+%FORMFIELD{"Description"}%
 
 %TOC%
 
@@ -104,16 +104,13 @@ non-alphabetic characters. Some textile examples:
 |  16 Oct 2003: | Speedup |
 |  09 Oct 2003: | Initial Version |
 
-<!--
-   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
--->
-
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="Othello Maurer, Michael Daum"}%
 %META:FIELD{name="Copyright" title="Copyright" value="2003, Othello Maurer; 2003-2015, Michael Daum http://michaeldaumconsulting.com"}%
 %META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
-%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/AliasPlugin"}%
 %META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
-%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
+%META:FIELD{name="Version" title="Version" value="%25$VERSION%25"}%
