@@ -1,7 +1,7 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (C) 2003 Othello Maurer <maurer@nats.informatik.uni-hamburg.de>
-# Copyright (C) 2003-2014 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2003-2024 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,14 +17,17 @@
 package Foswiki::Plugins::AliasPlugin;    # change the package name and $pluginName!!!
 
 use strict;
+use warnings;
+
 use Foswiki::Func ();
 use Foswiki::Plugins ();
 use Foswiki::Attrs ();
 
 # Foswiki maintenance
 our $VERSION = '3.04';
-our $RELEASE = '25 Aug 2011';
+our $RELEASE = '%$RELEASE%';
 our $SHORTDESCRIPTION = 'Define aliases which will be replaced with arbitrary strings automatically';
+our $LICENSECODE = '%$LICENSECODE%';
 our $NO_PREFS_IN_TOPIC = 1;
 
 use constant TRACE => 0; # toggle me

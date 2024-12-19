@@ -1,4 +1,6 @@
+!noci
 data/System/AliasPlugin.txt 0644
 data/System/WebAliases.txt 0644
-lib/Foswiki/Plugins/AliasPlugin.pm 0644
 lib/Foswiki/Plugins/AliasPlugin/DEPENDENCIES 0644
+lib/Foswiki/Plugins/AliasPlugin/MANIFEST 0644
+lib/Foswiki/Plugins/AliasPlugin.pm 0644
